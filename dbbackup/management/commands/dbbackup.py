@@ -36,7 +36,7 @@ class Command(BaseDbBackupCommand):
     )
 
     @utils.email_uncaught_exception
-    def handle(self, **options):
+    def handle(self, *args, **options):
         """Django command handler."""
         self.verbosity = int(options.get('verbosity'))
         self.quiet = options.get('quiet')
