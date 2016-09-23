@@ -137,8 +137,7 @@ class BaseCommandDBConnector(BaseDBConnector):
             if not getattr(stdin, 'fileno', None):
                 process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
                                 env=full_env)
-                grep_stdout = process.communicate(input=stdin)[0]
-                print(grep_stdout.decode())
+                grep_stdout = process.communicate(input=stdin.getvalue())[0]
             else:
                 process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
                                 env=full_env)
