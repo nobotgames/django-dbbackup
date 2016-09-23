@@ -3,7 +3,7 @@ Base database connectors
 """
 import shlex
 from tempfile import SpooledTemporaryFile
-from subprocess import Popen
+from subprocess import Popen, PIPE, STDOUT
 from importlib import import_module
 from dbbackup import settings, utils
 from . import exceptions
@@ -134,8 +134,14 @@ class BaseCommandDBConnector(BaseDBConnector):
         full_env = self.env.copy()
         full_env.update(env or {})
         try:
-            process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
-                            env=full_env)
+            if not getattr(stdin, 'fileno', None):
+                process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
+                                env=full_env)
+                grep_stdout = process.communicate(input=stdin)[0]
+                print(grep_stdout.decode())
+            else:
+                process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
+                                env=full_env)
             process.wait()
             if process.poll():
                 stderr.seek(0)
