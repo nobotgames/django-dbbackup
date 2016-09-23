@@ -135,9 +135,13 @@ class BaseCommandDBConnector(BaseDBConnector):
         full_env.update(env or {})
         try:
             if not getattr(stdin, 'fileno', None):
-                process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
-                                env=full_env)
-                grep_stdout = process.communicate(input=stdin.getvalue())[0]
+                if stdin:
+                    process = Popen(cmd, stdin=PIPE, stdout=stdout, stderr=stderr,
+                                    env=full_env)
+                    grep_stdout = process.communicate(input=stdin.getvalue())[0]
+                else:
+                    process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
+                                    env=full_env)
             else:
                 process = Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr,
                                 env=full_env)
